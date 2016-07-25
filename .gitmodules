@@ -1,0 +1,6 @@
+[submodule "tensorflow"]
+	path = tensorflow
+	url = https://github.com/tensorflow/tensorflow
+[submodule "bazel"]
+	path = bazel
+	url = https://github.com/bazelbuild/bazel
