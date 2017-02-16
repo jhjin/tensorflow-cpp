@@ -41,8 +41,8 @@ ExternalProject_Add(${PROJECT_NAME}-ext
                     TF_CUDA_COMPUTE_CAPABILITIES=3.5,5.2
                     ./configure
 
-  BUILD_COMMAND bazel build -c opt -j 200 ${TF_BUILD_CUDA} //tensorflow:libtensorflow.so
-                                                           //tensorflow/tools/pip_package:build_pip_package
+  BUILD_COMMAND bazel build -c opt -j 200 --config=opt ${TF_BUILD_CUDA} //tensorflow:libtensorflow.so
+                                                                        //tensorflow/tools/pip_package:build_pip_package
   INSTALL_COMMAND cp <SOURCE_DIR>/bazel-bin/tensorflow/libtensorflow.so ${CMAKE_SOURCE_DIR}/lib 
           COMMAND <SOURCE_DIR>/bazel-bin/tensorflow/tools/pip_package/build_pip_package ${CMAKE_SOURCE_DIR}/lib
 	  COMMAND /bin/bash -c "wheel unpack ${CMAKE_SOURCE_DIR}/lib/tensorflow-*.whl"
