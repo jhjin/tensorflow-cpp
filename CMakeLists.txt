@@ -20,7 +20,7 @@ endif()
 ExternalProject_Add(${PROJECT_NAME}-ext
   PREFIX ext
   GIT_REPOSITORY http://github.com/tensorflow/tensorflow.git
-  GIT_TAG e946a6b63979a63f9e5a1d1603f6cc21d8aad1cf
+  GIT_TAG 12a98726e769e988f6368a029ec2f5b0ac3ccbd4
   BUILD_IN_SOURCE 1
   INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}
 
@@ -41,9 +41,9 @@ ExternalProject_Add(${PROJECT_NAME}-ext
                     TF_CUDA_COMPUTE_CAPABILITIES=3.5,5.2
                     ./configure
 
-  BUILD_COMMAND bazel build -c opt -j 200 --config=opt ${TF_BUILD_CUDA} //tensorflow:libtensorflow.so
+  BUILD_COMMAND bazel build -c opt -j 200 --config=opt ${TF_BUILD_CUDA} //tensorflow:libtensorflow_cc.so
                                                                         //tensorflow/tools/pip_package:build_pip_package
-  INSTALL_COMMAND cp <SOURCE_DIR>/bazel-bin/tensorflow/libtensorflow.so ${CMAKE_SOURCE_DIR}/lib 
+  INSTALL_COMMAND cp <SOURCE_DIR>/bazel-bin/tensorflow/libtensorflow_cc.so ${CMAKE_SOURCE_DIR}/lib/libtensorflow.so
           COMMAND <SOURCE_DIR>/bazel-bin/tensorflow/tools/pip_package/build_pip_package ${CMAKE_SOURCE_DIR}/lib
 	  COMMAND /bin/bash -c "wheel unpack ${CMAKE_SOURCE_DIR}/lib/tensorflow-*.whl"
 	  COMMAND /bin/bash -c "rsync -am <SOURCE_DIR>/tensorflow-*/tensorflow-*.data/purelib/tensorflow/include ${CMAKE_SOURCE_DIR}"

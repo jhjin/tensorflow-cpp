@@ -10,7 +10,7 @@ all : run
 dependency :
 	echo "deb [arch=amd64] http://storage.googleapis.com/bazel-apt stable jdk1.8" | sudo tee /etc/apt/sources.list.d/bazel.list
 	curl https://bazel.build/bazel-release.pub.gpg | sudo apt-key add -
-	sudo apt-get update && sudo apt-get -y install bazel python-pip python-numpy swig python-dev python-wheel
+	sudo apt-get update && sudo apt-get -y install bazel python-pip python-numpy swig python-dev python-wheel python-wheel-common
 
 build :
 	rm -rf build && mkdir -p build
@@ -27,7 +27,7 @@ app : build data lib/libtensorflow.so
 	$(CC) app.cc $(CFLAGS) $(INCLUDE) $(LIBOPTS) -o $@ $(LDFLAGS)
 
 run : app
-	LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:./lib && ./app
+	LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:./lib && CUDA_VISIBLE_DEVICES=0 ./app ./data/grace_hopper.jpg
 
 clean :
 	rm -f *.o app

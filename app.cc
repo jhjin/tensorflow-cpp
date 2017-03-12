@@ -1,6 +1,8 @@
 #include <fstream>
 #include <vector>
+#include <string>
 
+#include "class_name.h"
 #include "tensorflow/cc/ops/const_op.h"
 #include "tensorflow/cc/ops/image_ops.h"
 #include "tensorflow/cc/ops/standard_ops.h"
@@ -81,10 +83,7 @@ Status ReadTensorFromImageFile(string file_name, const int input_height,
 
 int main(int argc, char* argv[]) {
 
-  string root_dir = ".";
-  string labels = root_dir + "/data/imagenet_comp_graph_label_strings.txt";
-  string graph_path = root_dir + "/data/tensorflow_inception_graph.pb";
-  string image_path = root_dir + "/data/grace_hopper.jpg";
+  string graph_path = "./data/tensorflow_inception_graph.pb";
   tensorflow::port::InitMain(argv[0], &argc, &argv);
 
   tensorflow::GraphDef graph_def;
@@ -94,9 +93,18 @@ int main(int argc, char* argv[]) {
   }
 
   std::unique_ptr<tensorflow::Session> session;
-  (&session)->reset(tensorflow::NewSession(tensorflow::SessionOptions()));
+  tensorflow::SessionOptions sess_opt;
+  sess_opt.config.mutable_gpu_options()->set_allow_growth(true);
+  (&session)->reset(tensorflow::NewSession(sess_opt));
   if (!session->Create(graph_def).ok()) {
     LOG(ERROR) << "Create graph";
+    return -1;
+  }
+
+  const int batch_size = argc - 1;
+  if (batch_size != 1) {
+    LOG(ERROR) << "Batch mode for the pretrained inception-v3 is unsupported";
+    LOG(ERROR) << " - https://github.com/tensorflow/tensorflow/issues/554";
     return -1;
   }
 
@@ -104,6 +112,7 @@ int main(int argc, char* argv[]) {
   int32 input_mean = 128;
   int32 input_std = 128;
   std::vector<Tensor> inputs;
+  std::string image_path(argv[1]);
   if (!ReadTensorFromImageFile(image_path, input_dim, input_dim, input_mean,
                                input_std, &inputs).ok()) {
     LOG(ERROR) << "Load image";
@@ -122,7 +131,7 @@ int main(int argc, char* argv[]) {
   Eigen::Map<Eigen::VectorXf> pred(outputs[0].flat<float>().data(),
                                    outputs[0].NumElements());
   int maxIndex; float maxValue = pred.maxCoeff(&maxIndex);
-  std::cout << "[" << maxIndex << "]: " << maxValue << std::endl;
+  LOG(INFO) << "P( " << class_name[maxIndex] << " | image ) = " << maxValue;
 
   return 0;
 }
