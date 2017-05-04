@@ -20,7 +20,7 @@ endif()
 ExternalProject_Add(${PROJECT_NAME}-ext
   PREFIX ext
   GIT_REPOSITORY http://github.com/tensorflow/tensorflow.git
-  GIT_TAG 1044c0ee945327294d2d6fdd93f6b4da9f529cf7
+  GIT_TAG d1565250256215a5e8bea184f3848b9d468672cb
   BUILD_IN_SOURCE 1
   INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}
 
@@ -34,6 +34,9 @@ ExternalProject_Add(${PROJECT_NAME}-ext
                     TF_NEED_JEMALLOC=1
                     TF_NEED_HDFS=0
                     TF_NEED_GCP=0
+                    TF_NEED_VERBS=0
+                    TF_NEED_MKL=1
+                    TF_DOWNLOAD_MKL=1
                     TF_NEED_OPENCL=0
                     TF_NEED_CUDA=${TF_NEED_CUDA}
                     TF_CUDA_CLANG=0
